@@ -1,16 +1,35 @@
 package com.back.p67260811.domain.post.post.entity;
 
+import com.back.p67260811.domain.post.comment.entity.PostComment;
 import com.back.p67260811.global.jpa.entity.BaseEntity;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import lombok.AllArgsConstructor;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @NoArgsConstructor
-@AllArgsConstructor
 @Getter
 @Entity
 public class Post extends BaseEntity {
     private String title;
     private String content;
+
+    @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE})
+    List<PostComment> comments = new ArrayList<>();
+
+    public Post(String title, String content){
+        this.title = title;
+        this.content = content;
+    }
+
+    public PostComment addComment(String content){
+        PostComment postComment = new PostComment(content, this);
+        this.comments.add(postComment);
+
+        return postComment;
+    }
 }

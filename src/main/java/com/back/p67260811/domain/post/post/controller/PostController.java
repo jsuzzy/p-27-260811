@@ -32,7 +32,7 @@ public class PostController {
     }
 
     @GetMapping("/posts/write")
-    @ResponseBody
+    @ResponseBody //브라우저에게 보내려면 직렬화가 필요
     public String write() {
 
         return getWriteFormHtml("", "", "");
