@@ -20,6 +20,10 @@ public class PostService {
         return post;
     }
 
+    public void deleteComment(Post post, int commentId){
+        post.removeComment(commentId);
+    }
+
     public Optional<Post> findById(int postId) {
         return postRepository.findById(postId);
     }

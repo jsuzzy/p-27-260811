@@ -9,11 +9,12 @@ import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
@@ -30,18 +31,13 @@ public class PostCommentController {
         private String content;
     }
 
-    @GetMapping("/posts/{postId}/comments/write")
+    @PostMapping("/posts/{postId}/comments/write")
     @Transactional
     @ResponseBody
     public String write(
             @PathVariable int postId,
-            @Valid CommentWriteForm form,
-            BindingResult bindingResult //문제가 생겨도 보고만 하고 정상 흐름으로 흘러가게
+            @Valid CommentWriteForm form
     ) {
-
-        if(bindingResult.hasErrors()) {
-            return "댓글 작성 실패";
-        }
 
         Post post = postService.findById(postId).get();
         PostComment postComment = post.addComment(form.content); //메서드가 끝난 후에 db에 반영됨
@@ -51,4 +47,20 @@ public class PostCommentController {
 
         return "%d번 댓글이 성공적으로 등록되었습니다.".formatted(postComment.getId()) + postId; //아직 db에 저장되지 않음 -> id는 존재하지 않아서 0
     }
+
+    @GetMapping("/posts/{postId}/comments/{commentId}/delete")
+    @Transactional
+    @ResponseBody
+    public String delete(
+            @PathVariable int postId,
+            @PathVariable int commentId
+    ) {
+
+        Post post = postService.findById(postId).get();
+        postService.deleteComment(post, commentId);
+
+        return "%d번 댓글이 삭제되었습니다.".formatted(commentId) + postId;
+    }
+
+
 }
