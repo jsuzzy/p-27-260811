@@ -18,4 +18,8 @@ public class PostComment extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     private Post post;
+
+    public void modify(String content){
+        this.content = content;
+    }
 }

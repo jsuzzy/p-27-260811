@@ -1,5 +1,6 @@
 package com.back.p67260811.domain.post.post.service;
 
+import com.back.p67260811.domain.post.comment.entity.PostComment;
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,8 +21,16 @@ public class PostService {
         return post;
     }
 
+    public PostComment writeComment(Post post, String content){
+        return post.addComment(content);
+    }
+
     public void deleteComment(Post post, int commentId){
         post.removeComment(commentId);
+    }
+
+    public PostComment modifyComment(Post post, int commentId, String content){
+        return post.modifyComment(commentId, content);
     }
 
     public Optional<Post> findById(int postId) {

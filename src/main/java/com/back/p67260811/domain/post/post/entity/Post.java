@@ -36,4 +36,15 @@ public class Post extends BaseEntity {
     public void removeComment(int id){
         comments.removeIf(comment -> comment.getId() == id);
     }
+
+    public PostComment modifyComment(int id, String content){
+        PostComment postComment = comments.stream()
+                .filter(comment -> comment.getId() == id)
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+
+        postComment.modify(content);
+
+        return postComment;
+    }
 }

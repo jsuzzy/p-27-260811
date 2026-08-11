@@ -12,10 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
 @RequiredArgsConstructor
@@ -40,7 +37,8 @@ public class PostCommentController {
     ) {
 
         Post post = postService.findById(postId).get();
-        PostComment postComment = post.addComment(form.content); //메서드가 끝난 후에 db에 반영됨
+//        PostComment postComment = post.addComment(form.content); //메서드가 끝난 후에 db에 반영됨
+        PostComment postComment = postService.writeComment(post, form.content);
 
         //db 저장
         postService.flush();
@@ -62,5 +60,26 @@ public class PostCommentController {
         return "%d번 댓글이 삭제되었습니다.".formatted(commentId) + postId;
     }
 
+    @AllArgsConstructor
+    @Getter
+    @Setter
+    public static class CommentModifyForm {
+        @NotBlank(message = "댓글 내용을 입력해주세요.")
+        @Size(min = 2, max = 100, message = "댓글 내용은 2글자 이상 100글자 이하로 입력해주세요.")
+        private String content;
+    }
 
+    @GetMapping("/posts/{postId}/comments/{commentId}/modify")
+    @Transactional
+    public String modify(
+            @PathVariable int postId,
+            @PathVariable int commentId,
+            @Valid CommentModifyForm form
+    ) {
+
+        Post post = postService.findById(postId).get();
+        postService.modifyComment(post, commentId, form.getContent());
+
+        return "redirect:/posts/" + postId;
+    }
 }
