@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -19,6 +20,10 @@ public class PostService {
         return post;
     }
 
+    public Optional<Post> findById(int postId) {
+        return postRepository.findById(postId);
+    }
+
     public List<Post> findAll(){
         return postRepository.findAll();
     }
@@ -26,5 +31,7 @@ public class PostService {
     public long count() {
         return postRepository.count();
     }
-
+    public void flush(){
+        postRepository.flush();
+    }
 }
