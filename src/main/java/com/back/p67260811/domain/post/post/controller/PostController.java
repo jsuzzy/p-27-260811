@@ -6,8 +6,6 @@ import com.back.p67260811.domain.post.post.service.PostService;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
@@ -38,16 +36,14 @@ public class PostController {
         return getWriteFormHtml("", "", "");
     }
 
-    @AllArgsConstructor
-    @Getter
-    public static class  PostWriteForm{
+    record PostWriteForm(
         @NotBlank(message = "1-제목을 입력해주세요.")
         @Size(min=2, max=10, message = "2-제목은 2자 이상 10자 이하로 입력해주세요.")
-        private String title;
+        String title,
         @NotBlank(message = "3-내용을 입력해주세요.")
         @Size(min=2, max=10, message = "4-내용은 2자 이상 10자 이하로 입력해주세요.")
-        private String content;
-    }
+        String content
+    ){}
 
     @PostMapping("/posts/doWrite")
     @ResponseBody
@@ -69,12 +65,12 @@ public class PostController {
                     .collect(Collectors.joining(""));
 
             return getWriteFormHtml(errorMessages,
-                    postWriteForm.getTitle(),
-                    postWriteForm.getContent()
+                    postWriteForm.title,
+                    postWriteForm.content
             );
         }
 
-        Post post = postService.write(postWriteForm.getTitle(), postWriteForm.getContent());
+        Post post = postService.write(postWriteForm.title, postWriteForm.content);
         return "%d번 글이 작성되었습니다.".formatted(post.getId());
     }
 
