@@ -73,7 +73,7 @@ public class PostCommentController {
     ) {
 
         Post post = postService.findById(postId).get();
-        postService.modifyComment(post, commentId, form.content());
+        postService.modifyComment(post, commentId, form.content);
 
         return "%d번 댓글이 수정되었습니다.".formatted(commentId) + postId;
     }
