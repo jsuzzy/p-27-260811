@@ -51,4 +51,8 @@ public class PostService {
     public PostComment findCommentById(Post post, int commentId) {
         return post.findCommentById(commentId);
     }
+
+    public void delete(int id) {
+        postRepository.deleteById(id);
+    }
 }
