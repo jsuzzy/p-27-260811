@@ -21,6 +21,14 @@ public class Post extends BaseEntity {
     @OneToMany(mappedBy = "post", cascade = {CascadeType.PERSIST, CascadeType.REMOVE}, orphanRemoval = true)
     List<PostComment> comments = new ArrayList<>();
 
+    public PostComment findCommentById(int id){
+        return comments
+                .stream()
+                .filter(c -> c.getId() == id)
+                .findFirst()
+                .orElseThrow(()-> new IllegalArgumentException("해당 댓글이 존재하지 않습니다."));
+    }
+
     public Post(String title, String content){
         this.title = title;
         this.content = content;
