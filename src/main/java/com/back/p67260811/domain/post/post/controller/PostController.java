@@ -37,16 +37,15 @@ public class PostController {
     }
 
     @GetMapping("/{id}/delete")
-    public RsData<PostDto> delete(
+    public RsData<Void> delete(
             @PathVariable int id
     ){
         Post post = postService.findById(id).get();
         postService.delete(id);
 
-        return new RsData<>(
+        return new RsData<Void>(
                 "200-1",
-                "게시물이 삭제되었습니다.",
-                new PostDto(post)
+                "게시물이 삭제되었습니다."
         );
     }
 

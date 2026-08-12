@@ -9,5 +9,12 @@ public class RsData<T> {
 
     private String resultCode;
     private String msg;
-    private T data;
+    //private Object data; 이렇게 해도 되지만 나중에 꺼내 쓸 때 불편
+    private T data; // 제너릭을 사용하면 RsData 를 사용하는 시점에 T를 결정할 수 있음
+
+    public RsData(String resultCode, String msg){
+        this.resultCode = resultCode;
+        this.msg = msg;
+        data = null;
+    }
 }
