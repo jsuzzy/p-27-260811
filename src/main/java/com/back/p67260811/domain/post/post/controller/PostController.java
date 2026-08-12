@@ -36,7 +36,7 @@ public class PostController {
         return new PostDto(post);
     }
 
-    @GetMapping("/{id}/delete")
+    @DeleteMapping("/{id}")
     public RsData<Void> delete(
             @PathVariable int id
     ){
@@ -48,5 +48,4 @@ public class PostController {
                 "게시물이 삭제되었습니다."
         );
     }
-
 }

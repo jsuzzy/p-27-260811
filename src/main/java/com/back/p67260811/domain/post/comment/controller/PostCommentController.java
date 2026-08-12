@@ -82,7 +82,6 @@ public class PostCommentController {
                 "200-1",
                 "%d번 댓글이 삭제되었습니다.".formatted(commentId)
         );
-
     }
 
     record CommentModifyForm(
