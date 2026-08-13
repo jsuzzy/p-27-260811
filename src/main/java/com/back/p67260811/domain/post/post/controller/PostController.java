@@ -7,6 +7,7 @@ import com.back.p67260811.domain.post.post.service.PostService;
 import com.back.p67260811.global.dto.RsData;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -19,20 +20,20 @@ public class PostController {
     private final PostService postService;
 
     @GetMapping
-    public List<PostDto> list(){
+    public List<PostDto> list() {
         List<Post> postList = postService.findAll();
 
         List<PostDto> postDtoList = postList.stream()
                 .map(PostDto::new)
                 .toList();
 
-    return postDtoList;
+        return postDtoList;
     }
 
     @GetMapping("/{id}")
     public PostDto detail(
             @PathVariable int id
-    ){
+    ) {
         Post post = postService.findById(id).get();
         return new PostDto(post);
     }
@@ -40,37 +41,41 @@ public class PostController {
     record PostWriteReqBody(
             String title,
             String content
-    ){}
+    ) {
+    }
 
     record PostWriteResBody(
             PostDto postDto,
             long totalPostCount
-    ){}
+    ) {
+    }
 
     @PostMapping
-    public RsData<PostWriteResBody> write(
+    public ResponseEntity<RsData<PostWriteResBody>> write(
             @Valid @RequestBody PostWriteReqBody reqBody
-    ){
+    ) {
         Post post = postService.write(reqBody.title, reqBody.content);
-        return new RsData<>(
+        RsData<PostWriteResBody> rsData = new RsData<>(
                 "201-1",
                 "%d번 글이 성공적으로 등록되었습니다.".formatted(post.getId()),
                 new PostWriteResBody(
                         new PostDto(post),
                         postService.count()
                 )
-                );
+        );
+
+        return ResponseEntity.status(201).body(rsData);
     }
 
     @DeleteMapping("/{id}")
     public RsData<Void> delete(
             @PathVariable int id
-    ){
+    ) {
         Post post = postService.findById(id).get();
         postService.delete(id);
 
         return new RsData<Void>(
-                "204-1",
+                "200-2",
                 "게시물이 삭제되었습니다."
         );
     }
