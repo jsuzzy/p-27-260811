@@ -21,6 +21,10 @@ public class PostService {
         return post;
     }
 
+    public void modify(Post post, String title, String content){
+        post.update(title, content);
+    }
+
     public PostComment writeComment(Post post, String content){
         return post.addComment(content);
     }

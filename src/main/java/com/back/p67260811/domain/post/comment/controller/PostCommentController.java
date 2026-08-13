@@ -50,11 +50,11 @@ public class PostCommentController {
         String content
     ){}
 
-    @PostMapping("/write")
+    @PostMapping
     @Transactional
-    public String write(
+    public RsData<PostCommentDto> write(
             @PathVariable int postId,
-            @Valid CommentWriteForm form
+            @Valid @RequestBody CommentWriteForm form
     ) {
 
         Post post = postService.findById(postId).get();
@@ -64,10 +64,15 @@ public class PostCommentController {
         //db 저장
         postService.flush();
 
-        return "%d번 댓글이 성공적으로 등록되었습니다.".formatted(postComment.getId()) + postId; //아직 db에 저장되지 않음 -> id는 존재하지 않아서 0
+        return new RsData<>(
+                "201-1",
+                "%d번 댓글이 성공적으로 등록되었습니다.".formatted(postComment.getId()) + postId,
+                new PostCommentDto(postComment)
+        );
+
     }
 
-    @GetMapping("/{commentId}/delete")
+    @DeleteMapping("/{commentId}")
     @Transactional
     public RsData<Void> delete(
             @PathVariable int postId,
@@ -90,17 +95,21 @@ public class PostCommentController {
             String content
     ){}
 
-    @GetMapping("/{commentId}/modify")
+    @PatchMapping("/{commentId}")
     @Transactional
-    public String modify(
+    public RsData<PostCommentDto> modify(
             @PathVariable int postId,
             @PathVariable int commentId,
-            @Valid CommentModifyForm form
+            @Valid @RequestBody CommentModifyForm form
     ) {
 
         Post post = postService.findById(postId).get();
         postService.modifyComment(post, commentId, form.content);
 
-        return "%d번 댓글이 수정되었습니다.".formatted(commentId) + postId;
+        return new RsData<>(
+                "201-1",
+                "%d번 댓글이 수정되었습니다.".formatted(commentId) + postId
+        );
+
     }
 }
