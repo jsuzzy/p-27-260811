@@ -5,6 +5,7 @@ import com.back.p67260811.domain.post.post.dto.PostDto;
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.service.PostService;
 import com.back.p67260811.global.dto.RsData;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,23 @@ public class PostController {
         return new PostDto(post);
     }
 
+    record PostWriteReqBody(
+            String title,
+            String content
+    ){}
+
+    @PostMapping
+    public RsData<PostDto> write(
+            @Valid @RequestBody PostWriteReqBody reqBody
+    ){
+        Post post = postService.write(reqBody.title, reqBody.content);
+        return new RsData<>(
+                "201-1",
+                "%d번 글이 성공적으로 등록되었습니다.".formatted(post.getId()),
+                new PostDto(post)
+                );
+    }
+
     @DeleteMapping("/{id}")
     public RsData<Void> delete(
             @PathVariable int id
@@ -44,7 +62,7 @@ public class PostController {
         postService.delete(id);
 
         return new RsData<Void>(
-                "200-1",
+                "204-1",
                 "게시물이 삭제되었습니다."
         );
     }
