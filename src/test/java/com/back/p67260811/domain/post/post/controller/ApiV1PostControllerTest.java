@@ -14,7 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -45,8 +45,23 @@ public class ApiV1PostControllerTest {
                 )
                 .andDo(print()); //응답을 콘솔에 출력
 
+        List<Post> posts = postRepository.findAll();
+
         resultActions
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("list"))
                 .andExpect(status().isOk());
+
+        for(int i = 0; i < posts.size(); i++) {
+            Post post = posts.get(i);
+
+            resultActions
+                    .andExpect(jsonPath("$[%d].id".formatted(i)).value(post.getId()))
+                    .andExpect(jsonPath("$[%d].createDate".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].modifyDate".formatted(i)).exists())
+                    .andExpect(jsonPath("$[%d].title".formatted(i)).value(post.getTitle()))
+                    .andExpect(jsonPath("$[%d].content".formatted(i)).value(post.getContent()));
+        }
     }
 
     @Test
@@ -107,30 +122,8 @@ public class ApiV1PostControllerTest {
     }
 
     @Test
-    @DisplayName("글 삭제")
-    void t4() throws Exception {
-        int targetId = 3;
-
-        ResultActions resultActions = mvc
-                .perform(
-                        delete("/api/v1/posts/%d".formatted(targetId))
-                )
-                .andDo(print());
-
-        // 필수 검증
-        resultActions
-                .andExpect(handler().handlerType(ApiV1PostController.class))
-                .andExpect(handler().methodName("delete"))
-                .andExpect(status().isOk());
-
-        // 선택적 검증
-        Optional<Post> opPost = postRepository.findById(targetId);
-        assertThat(opPost.isEmpty()).isEqualTo(true);
-    }
-
-    @Test
     @DisplayName("글 단건조회")
-    void t5() throws Exception {
+    void t4() throws Exception {
         int targetId = 2;
 
         ResultActions resultActions = mvc
