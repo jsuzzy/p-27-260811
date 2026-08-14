@@ -37,6 +37,7 @@ public class ApiV1PostController {
             @PathVariable int id
     ) {
         Post post = postService.findById(id).get();
+
         return new PostDto(post);
     }
 
@@ -69,7 +70,8 @@ public class ApiV1PostController {
             @Size(min = 2, max = 10, message = "내용은 2글자 이상 10글자 이하로 작성해 주세요.")
             @NotBlank(message = "내용을 입력해 주세요.")
             String content
-    ) { }
+    ) {
+    }
 
     @PatchMapping("/{id}")
     @Transactional
