@@ -2,6 +2,7 @@ package com.back.p67260811.domain.post.post.controller;
 
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.repository.PostRepository;
+import com.back.p67260811.domain.post.post.service.PostService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,11 +14,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.handler;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest //빈이 다 등록되면 테스트를 진행해라
 @ActiveProfiles("test")
@@ -30,6 +32,8 @@ public class ApiV1PostControllerTest {
 
     @Autowired
     private PostRepository postRepository;
+    @Autowired
+    private PostService postService;
 
     @Test
     @DisplayName("글 다건 조회")
@@ -95,10 +99,58 @@ public class ApiV1PostControllerTest {
                 .andExpect(status().isOk());
 
         // 선택적 검증
-        Post post = postRepository.findById(targetId).get();
+        Post post = postRepository.findById(targetId).get(); //순수 DB 조회
+        Post psot2 = postService.findById(targetId).get(); //비즈니스 로직 포함
 
         assertThat(post.getTitle()).isEqualTo(title);
         assertThat(post.getContent()).isEqualTo(content);
     }
+
+    @Test
+    @DisplayName("글 삭제")
+    void t4() throws Exception {
+        int targetId = 3;
+
+        ResultActions resultActions = mvc
+                .perform(
+                        delete("/api/v1/posts/%d".formatted(targetId))
+                )
+                .andDo(print());
+
+        // 필수 검증
+        resultActions
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("delete"))
+                .andExpect(status().isOk());
+
+        // 선택적 검증
+        Optional<Post> opPost = postRepository.findById(targetId);
+        assertThat(opPost.isEmpty()).isEqualTo(true);
+    }
+
+    @Test
+    @DisplayName("글 단건조회")
+    void t5() throws Exception {
+        int targetId = 2;
+
+        ResultActions resultActions = mvc
+                .perform(
+                        get("/api/v1/posts/%d".formatted(targetId))
+                )
+                .andDo(print());
+
+        // 필수 검증
+        resultActions
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("detail"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(2))
+                .andExpect(jsonPath("$.createDate").exists())
+                .andExpect(jsonPath("$.modifyDate").exists())
+                .andExpect(jsonPath("$.title").value("제목2"))
+                .andExpect(jsonPath("$.content").value("내용2"));
+
+    }
+
 
 }
