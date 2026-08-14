@@ -1,6 +1,7 @@
 package com.back.p67260811.global.exceptionHandler;
 
 import com.back.p67260811.global.dto.RsData;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -42,4 +43,13 @@ public class GlobalExceptionHandler {
         );
     }
 
+    @ExceptionHandler(HttpMessageNotReadableException.class) //매개변수로 전달된 예외의 처리를 아래 메서드가 처리
+    @ResponseBody
+    public RsData<Void> httpMessageNotReadableException(HttpMessageNotReadableException e){
+
+        return new RsData<Void>(
+                "400-2",
+                "잘못된 형식의 요청 데이터입니다."
+        );
+    }
 }
