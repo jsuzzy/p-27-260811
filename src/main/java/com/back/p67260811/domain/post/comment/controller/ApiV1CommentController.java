@@ -5,6 +5,8 @@ import com.back.p67260811.domain.post.comment.entity.PostComment;
 import com.back.p67260811.domain.post.post.entity.Post;
 import com.back.p67260811.domain.post.post.service.PostService;
 import com.back.p67260811.global.dto.RsData;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,11 +19,13 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("api/v1/posts/{postId}/comments")
-public class PostCommentController {
+@Tag(name = "ApiV1CommentController", description = "댓글 API")
+public class ApiV1CommentController {
 
     private final PostService postService;
 
     @GetMapping
+    @Operation(summary = "다건 조회")
     public List<PostCommentDto> list(
             @PathVariable int postId
     ){
@@ -34,6 +38,7 @@ public class PostCommentController {
     }
 
     @GetMapping("/{commentId}")
+    @Operation(summary = "단건 조회")
     public PostCommentDto item(
             @PathVariable int postId,
             @PathVariable int commentId
@@ -52,6 +57,7 @@ public class PostCommentController {
 
     @PostMapping
     @Transactional
+    @Operation(summary = "댓글 작성")
     public RsData<PostCommentDto> write(
             @PathVariable int postId,
             @Valid @RequestBody CommentWriteForm form
@@ -74,6 +80,7 @@ public class PostCommentController {
 
     @DeleteMapping("/{commentId}")
     @Transactional
+    @Operation(summary = "댓글 삭제")
     public RsData<Void> delete(
             @PathVariable int postId,
             @PathVariable int commentId
@@ -97,6 +104,7 @@ public class PostCommentController {
 
     @PatchMapping("/{commentId}")
     @Transactional
+    @Operation(summary = "댓글 수정")
     public RsData<PostCommentDto> modify(
             @PathVariable int postId,
             @PathVariable int commentId,
