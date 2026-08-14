@@ -84,7 +84,14 @@ public class ApiV1PostControllerTest {
                 .andDo(print());
 
         resultActions
-                .andExpect(status().isCreated());
+                .andExpect(handler().handlerType(ApiV1PostController.class))
+                .andExpect(handler().methodName("write"))
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.data.id").value(4))
+                .andExpect(jsonPath("$.data.createDate").exists())
+                .andExpect(jsonPath("$.data.modifyDate").exists())
+                .andExpect(jsonPath("$.data.title").value(title))
+                .andExpect(jsonPath("$.data.content").value(content));
     }
 
     @Test
